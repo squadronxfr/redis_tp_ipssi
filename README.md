@@ -79,7 +79,24 @@ Exemples d’utilisation:
 - Vérifier la connexion Redis via .env:
   make ping
 
-Astuce: sous Windows PowerShell, exécutez les commandes dans le terminal intégré de l’éditeur (ou WSL) si GNU Make n’est pas disponible nativement.
+Compat Windows/macOS/Linux via variables d’environnement
+- Le Makefile détecte automatiquement le dossier binaire de l’environnement virtuel (bin vs Scripts).
+- Vous pouvez surcharger des variables au besoin:
+  - VENV: dossier de l’environnement virtuel (défaut: .venv)
+  - PORT: port Streamlit (défaut: 8501)
+  - REDIS_HOST: hôte Redis (défaut: celui de l’exemple)
+  - REDIS_PORT: port Redis (défaut: 16763)
+  - DOTENV: chemin vers le fichier .env (défaut: .env)
+
+Exemples:
+- Changer le port de Streamlit:
+  make app PORT=8502
+- Pinger un autre Redis (sans modifier le code):
+  make ping REDIS_HOST=localhost REDIS_PORT=6379
+- Utiliser un autre fichier d’environnement:
+  make ping DOTENV=.env.local
+
+Astuce: sous Windows, exécutez make depuis Git Bash, MSYS2 ou WSL pour une meilleure compatibilité. Le Makefile reste utilisable en PowerShell si GNU Make est installé; les chemins vers l’environnement virtuel sont gérés automatiquement (Scripts/ vs bin/).
 
 ## 4) Configuration (.env)
 

@@ -3,13 +3,26 @@
 # Exemple: `make install`, `make app`, `make notebook`
 
 SHELL := /bin/bash
+
+# Variables configurables (surchargables en ligne de commande ou via env)
 PY ?= python3
-VENV := .venv
-PYTHON := $(VENV)/bin/python
-PIP := $(VENV)/bin/pip
-STREAMLIT := $(VENV)/bin/streamlit
-JUPYTER := $(VENV)/bin/jupyter
+VENV ?= .venv
 PORT ?= 8501
+REDIS_HOST ?= redis-16763.c304.europe-west1-2.gce.redns.redis-cloud.com
+REDIS_PORT ?= 16763
+DOTENV ?= .env
+
+# Détection du dossier binaire de l'environnement virtuel (Windows vs Unix)
+ifeq ($(OS),Windows_NT)
+  VENV_BIN := $(VENV)/Scripts
+else
+  VENV_BIN := $(VENV)/bin
+endif
+
+PYTHON := $(VENV_BIN)/python
+PIP := $(VENV_BIN)/pip
+STREAMLIT := $(VENV_BIN)/streamlit
+JUPYTER := $(VENV_BIN)/jupyter
 
 .PHONY: help venv install notebook lab app app-port ping freeze clean
 
@@ -39,11 +52,10 @@ app-port: ## Lance Streamlit sur un port spécifique: make app-port PORT=8502
 	$(MAKE) app PORT=$(PORT)
 
 ping: install ## Vérifie la connexion à Redis (via Python + .env)
-	$(PYTHON) -c "from dotenv import load_dotenv;import os,redis;load_dotenv('.env');u=os.getenv('REDIS_USERNAME');p=os.getenv('REDIS_PASSWORD');r=redis.Redis(host='redis-16763.c304.europe-west1-2.gce.redns.redis-cloud.com',port=16763,decode_responses=True,username=u,password=p);print('Redis PING: OK' if r.ping() else 'Redis PING: FAIL')"
+	$(PYTHON) -c "import os, redis; from dotenv import load_dotenv; load_dotenv(os.getenv('DOTENV', '.env')); u=os.getenv('REDIS_USERNAME'); p=os.getenv('REDIS_PASSWORD'); host=os.getenv('REDIS_HOST','$(REDIS_HOST)'); port=int(os.getenv('REDIS_PORT','$(REDIS_PORT)')); r=redis.Redis(host=host, port=port, decode_responses=True, username=u, password=p); print('Redis PING: OK' if r.ping() else 'Redis PING: FAIL')"
 
 freeze: install ## Écrit les versions exactes installées dans requirements.txt
 	$(PIP) freeze > requirements.txt
 
 clean: ## Nettoie fichiers temporaires (__pycache__, *.pyc)
-	rm -rf **/__pycache__
-	find . -type f -name "*.py[co]" -delete
+	$(PYTHON) -c "import os, shutil; from pathlib import Path; [shutil.rmtree(str(d), ignore_errors=True) for d in Path('.').rglob('__pycache__')]; [os.remove(str(f)) for f in Path('.').rglob('*.pyc') if os.path.isfile(f)]; print('Nettoyage terminé')"
