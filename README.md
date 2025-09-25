@@ -46,6 +46,41 @@ pip install -r requirements.txt
 
 ---
 
+## Makefile — commandes principales
+
+Le projet fournit un Makefile pour simplifier les tâches courantes. Assurez-vous d’être à la racine du dépôt.
+
+- Prérequis: make (GNU Make), Python installé sur la machine.
+- Le Makefile crée et utilise un environnement virtuel local .venv.
+
+Commandes principales:
+- make help — affiche la liste des commandes avec leur description
+- make venv — crée l’environnement virtuel (.venv) et met pip à jour
+- make install — installe les dépendances dans .venv (requirements.txt)
+- make notebook — ouvre le notebook Jupyter main.ipynb
+- make lab — ouvre JupyterLab à la racine du projet
+- make app — lance l’application Streamlit sur le port par défaut 8501
+- make app-port PORT=8502 — lance Streamlit sur un port spécifique
+- make ping — teste la connexion Redis (nécessite .env)
+- make freeze — fige les versions installées dans requirements.txt
+- make clean — supprime les caches Python (__pycache__, *.pyc)
+
+Exemples d’utilisation:
+- Initialisation du projet:
+  make install
+- Lancer le notebook:
+  make notebook
+- Lancer JupyterLab:
+  make lab
+- Lancer la WebApp Streamlit (port par défaut):
+  make app
+- Lancer la WebApp Streamlit sur un autre port (ex: 8502):
+  make app-port PORT=8502
+- Vérifier la connexion Redis via .env:
+  make ping
+
+Astuce: sous Windows PowerShell, exécutez les commandes dans le terminal intégré de l’éditeur (ou WSL) si GNU Make n’est pas disponible nativement.
+
 ## 4) Configuration (.env)
 
 Créer un fichier `.env` à la racine :
