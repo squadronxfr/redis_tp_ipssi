@@ -71,8 +71,8 @@ REDIS_PASSWORD=...
 
 ### Recherche sur le titre
 ```python
-def search_by_title(keyword, max_results=10):
-    """Recherche films par mot-clé dans le titre uniquement"""
+def search_by_title_keyword(keyword, max_results=10):
+    """Recherche films par mot-clé dans le titre uniquement (fallback sans RediSearch)"""
     needle = (keyword or "").lower().strip()
     if not needle:
         return []
@@ -111,12 +111,28 @@ for rank, k in enumerate(members, start=1):
 
 ## 7) Lancer la WebApp
 
-`app_streamlit.py` :  
-```bash
-export REDIS_USERNAME=...
-export REDIS_PASSWORD=...
-streamlit run app_streamlit.py
+`app_streamlit.py` (Windows PowerShell) :
+```powershell
+cd C:\Users\Kilian\Documents\tech\cours\redis_tp_ipssi
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+
+# Lancement (le fichier .env est chargé automatiquement par l'app)
+.\.venv\Scripts\python.exe -m streamlit run app_streamlit.py
+# Si besoin, changer de port
+.\.venv\Scripts\python.exe -m streamlit run app_streamlit.py --server.port 8502
 ```
+
+Fonctionnalités principales de la WebApp:
+- Populaires (bar chart)
+- Meilleurs notés (seuil de votes configurable)
+- Nouveautés (filtre par année)
+- Box-office — Top 10
+- Répartition des genres (Top 12)
+- Distribution des durées (histogramme agrégé)
+- Notes vs Votes (scatter, axe X logarithmique)
+- Recherche par mots-clés (liste de titres) + détail du film
 
 ---
 
